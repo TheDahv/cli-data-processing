@@ -1,0 +1,558 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Command-line wizardry for CSV, JSON, HTML</title>
+
+    <link rel="stylesheet" href="node_modules/reveal.js/dist/reset.css">
+    <link rel="stylesheet" href="node_modules/reveal.js/dist/reveal.css">
+    <link rel="stylesheet" href="node_modules/reveal.js/dist/theme/moon.css">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="node_modules/reveal.js/plugin/highlight/zenburn.css">
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section data-markdown><textarea data-template>
+          ## Command-line wizardry for CSV, JSON, & HTML
+
+          _How to be lazy & avoid writing programs to process data_
+        </textarea></section>
+
+        <section data-markdown><textarea data-template>
+        ## Overview
+
+        Together, we will learn some things:
+
+        - Motivation and inspiration to learn this
+        - Why more code isn't the answer
+        - UNIX philosophy and why it _is_ the answer
+        - Some new tools and how to use them
+        - A taste of what is possible
+
+        </textarea> </section>
+
+        <section data-markdown><textarea data-template>
+        ## Challenge!
+
+        - Take this giant CSV from the client!
+        - Get a bunch of related data from remote sources!
+        - Do a bunch of processing on the contents!
+        - Format and save the results in a CSV to send back!
+        </data-template></section>
+
+        <section data-markdown><textarea data-template>
+        ### Meanwhile, I'm like...
+
+        ![Disgusted](./img/disgusted.gif)
+        </textarea></section>
+
+        <section data-markdown><textarea data-template>
+        ### Oh, you need it by EOD?
+        </textarea></section>
+
+        <section data-markdown><textarea data-template>
+        ### Put on a Happy Face
+
+        ![I am calm](./img/calm.gif)
+        </textarea></section>
+
+        <section data-markdown><textarea data-template>
+        ## Some Context...
+
+        - I often work with teams that need data to do their jobs
+        - Many requests are unique one-offs
+        - Without more tooling, I need to write custom programs
+        </textarea></section>
+
+        <section>
+          <img src="./img/sad-anakin.gif" alt="This makes developers sad">
+        </section>
+
+        <section data-markdown><textarea data-template>
+        ## How I _used_ to Write Programs
+
+        ```javascript
+        try {
+          const file = await fsPromises.readFile('someFile.csv');
+          const rows = csv.parse(options, file)
+          const results = rows.map(wickedCoolProcessing);
+          const out = results.join('\n')
+          await fsPromises.writeFile('outFile.csv', out);
+        } catch (err) {
+          console.error(`something went wrong: ${err}`);
+          process.exit(1);
+        }
+        console.log('Done!');
+        ```
+        </textarea></section>
+
+        <section data-markdown><textarea data-template>
+        ## Problems
+
+        - All-or-nothing error handling
+        - Each 'step' in the process requires its own memory
+        - Not every problem can fit into memory
+        - Had to write a program to begin with
+
+        ![That's a problem](./img/thats-a-problem.gif)
+        </textarea></section>
+
+        <section data-markdown><textarea data-template>
+        ## Now You're Thinking With Streams
+
+        ```javascript
+        const dest = fs.createWriteStream(RESULT_FILE);
+        dest.on('finish', () => { console.log('Done!'); });
+
+        const parser = csv.parse(options);
+        const input =
+          fs.createReadStream('./someGiantFile.csv').pipe(parser);
+
+        hl(input)
+          .split('\n')
+          .map(wickedCoolProcessing)
+          .errors(console.error)
+          .pipe(csv.stringify(options))
+          .pipe(dest);
+        ```
+        </textarea></section>
+
+        <section data-markdown><textarea data-template>
+          ## Some Improvements
+
+          - Streams keep memory-usage in check
+          - Streams allow us to continue on error
+          - Streams look cool
+
+          ![Getting better, but not really](./img/thumbs-up-glitch.gif)
+        </textarea></section>
+
+        <section data-markdown><textarea data-template>
+          ## Problems
+
+          Now you have a beautiful streams program you will never use again.
+
+          ![Bigger Problem](./img/big-problem-now.gif)
+        </textarea></section>
+
+        <section data-markdown><textarea data-template>
+          ## But what if you don't know how to program to begin with?
+
+          Everyone should learn to program if they want to. But shouldn't be the
+          reason you learn to program.
+
+          The tools already exist on your computer.
+
+          Save programming for a more interesting problem.
+        </textarea></section>
+
+        <section data-markdown><textarea data-template>
+          ## [Mike Gancarz: The UNIX Philosophy](https://en.wikipedia.org/wiki/Unix_philosophy#Mike_Gancarz:_The_UNIX_Philosophy)
+
+          - Small is beautiful.
+          - Make each program do one thing well.
+          - Build a prototype as soon as possible.
+          - Choose portability over efficiency.
+          - Store data in flat text files.
+          - Use software leverage to your advantage.
+          - Use shell scripts to increase leverage and portability.
+          - Avoid captive user interfaces.
+          - Make every program a filter.
+        </textarea></section>
+
+        <section data-markdown><textarea data-template>
+          ## Moral of the Story
+
+          Don't write programs to solve these problems.
+
+          Compose existing programs. Create solutions.
+        </textarea></section>
+
+        <section data-markdown><textarea data-template>
+        ## Elegant BASH for a More Civilized Age
+
+        <small>Available on most systems via package managers, binaries, or
+        source.</small>
+
+        - [jq](https://stedolan.github.io/jq/) - Parse, transform, and emit JSON from files or stdin
+        - [pup](https://github.com/ericchiang/pup) - Parse and extract from HTML in a file or stdin
+        - [csvkit](https://csvkit.readthedocs.io/en/1.0.1/) - A suite of tools for working
+          with data read from or written to CSV files
+
+        _There are other nominees--like [sgrep](http://sgrep.sourceforge.net/)
+        and [RecordStream](https://github.com/benbernard/RecordStream)--but
+        we'll stay focused on these 3 for now_
+        </textarea></section>
+
+        <section>
+          <section data-markdown><textarea data-template>
+          ## JQ
+
+          #### Given:
+
+          - Some input via stdin or a file
+          - Some selectors, filters, transformations, and expressions
+
+          #### Output:
+
+          - A JSON value in the object
+          - A sub-object in the input or an entirely new object
+          - The result of an expression or calculation
+          </textarea></section>
+
+
+          <section data-markdown><textarea data-template>
+          ### Getting Values Out
+
+          ```bash
+          $ echo '{"foo": "bar"}' | jq '.foo'
+          > "bar"
+
+          $ echo '{"stats": { "hp": 20, "mp": 30 }}' | jq '.stats'
+          > {
+              "hp": 20,
+              "mp": 30
+            }
+
+          $ echo '{"stats": { "hp": 20, "mp": 30 }}' | jq '.stats.mp'
+          > 30
+
+          $ echo '{"name": "David", "age": "32", "isADavid": true}' \
+            | jq -c '{name,isADavid}'
+          > {"name":"David","isADavid":true}
+
+          ```
+          </textarea></section>
+
+
+          <section data-markdown><textarea data-template>
+          ### Expressions on Values
+
+          ```bash
+          $ echo '[1,2,3,4,5]' | jq 'add'
+          > 15
+
+          $ echo '[
+              {"name": "David"},
+              {"name": "Micaline"},
+              {"name": "Porter"},
+              {"name": "Isaac"}
+            ]' | jq -c 'map(.name | length)'
+          > [5,8,6,5]
+          ```
+          </textarea></section>
+
+          <section data-markdown><textarea data-template>
+            ### More Examples
+
+            - [`examples/jq/extract/stationcode-weather.sh`](examples/jq/extract/stationcode-weather.sh)
+            - [`examples/jq/extract/extract-from-list.sh`](examples/jq/extract/extract-from-list.sh)
+          </textarea></section>
+        </section>
+
+        <section>
+          <section data-markdown><textarea data-template>
+          ## Pup
+
+          - Basically jq, but for HTML
+          - Uses CSS selectors as a language for extraction
+          - Not as much power in transformations and expressions
+          - It just pulls things out of web pages
+          </textarea></section>
+
+          <section data-markdown><textarea data-template>
+            ### Examples
+
+            A hastily borrowed example: HN article titles
+
+            ```bash
+            curl -s http://hckrnews.com/ \
+              | pup '#entries .entries .entry a:last-child json{}'
+            ```
+
+            <small>_Hint: this looks like a job for jq_</small>
+
+            A more relevant example: Extracting structured JSON
+
+            ```bash
+            curl -s https://developers.google.com/search/docs/guides/intro-structured-data \
+              | pup 'script[type="application/ld+json"] text{}' \
+              | jq '.itemListElement | .[].item'
+            ```
+          </textarea></section>
+        </section>
+
+        <section>
+        <section data-markdown><textarea data-template>
+        ## CSVKit
+
+        - Do common CSV tasks on the command-line
+        - Builtin support for reading `gzip` or `bz2`
+        - Built in Python, distributed via `pip`
+        - _No programming required!_
+        </textarea></section>
+
+        <section data-markdown><textarea data-template>
+        ### csvsql and sql2csv
+
+        - Read from database; produce CSV
+        - Generate `INSERT` statements from CSV contents
+        - Supports various databases
+        - Be careful on implementation-specific types (dates, times, lists, etc.)
+
+        ```bash
+        $ sql2csv --db postgresql:///database \
+            --query "select * from data" > new.csv
+        $ csvsql --db postgresql:///database \
+            --insert data.csv
+
+        $ csvsql --help | grep "\-\-dialect"
+        > --dialect {access,sybase,sqlite,informix,firebird,mysql,
+        oracle, maxdb,postgresql,mssql}
+        ```
+        </textarea></section>
+
+        <section data-markdown><textarea data-template>
+        ### csvjson
+
+        - Produce JSON from CSV contents
+        - Column names become object field properties
+        - Useful options
+          - `--stream`: Emit one row at a time
+          - `-p`: Escape character
+          - `--maxfield`: Increase default column width
+
+        </textarea></section>
+        <section data-markdown><textarea data-template>
+        ### csvjson
+
+        ![JSON in CSV](./img/json-in-csv.png)
+
+        ```bash
+        csvjson --stream -p '\' --maxfield=1000000 \
+          | jq '{id} + (.data | fromjson)'
+        ```
+
+        See [examples/csvkit/csvjson/nested-json.sh](examples/csvkit/csvjson/nested-json.sh)
+        </textarea></section>
+
+        <section data-markdown><textarea data-template>
+        ### in2csv
+
+        - Produce CSV from structured data
+        - _Warning_ - Not smart about nested, list data types
+        - Understands a few formats:
+          - xls,xlsx - _Some people still use these, right?_
+          - json - _Turn a single document into a CSV...meh_
+          - ndjson - _Hey, jq knows how to produce this!_
+
+        ```bash
+        ./stationcode-weather.sh | in2csv -f ndjson > weather-report.csv
+        ```
+        </textarea></section>
+
+        <section data-markdown><textarea data-template>
+        ### csvcut
+
+        - Filter and truncate CSV files
+        - Useful for dropping columns you don't need
+        - Not much else to say here...
+
+        ```bash
+        csvcut -c county,item_name,quantity data.csv
+        ```
+        </textarea></section data-markdown>
+
+        <section data-markdown><textarea data-template>
+        ### csvjoin
+
+        - Join multiple files by common columns and values
+        - Supports various join strategies (inner, left, right)
+        - _Warning_ - Limitations on very large files (join happens in memory)
+
+        ```bash
+        # item-detail.csv, item-prices.csv
+        csvjoin --left -c item_id,item_id item-detail.csv item-prices.csv \
+          | csvjson --stream \
+          | gzip \
+          > $OUTPUT
+        ```
+        </textarea></section data-markdown>
+
+        <section data-markdown><textarea data-template>
+        ### csvstack
+
+        - Combine homogenous data spread across multiple files
+
+        ```bash
+        csvstack \
+          log-export-1.csv \
+          log-export-2.csv \
+          log-export-3.csv \
+        > combined.csv
+        ```
+        </textarea></section data-markdown>
+        </section>
+
+        <section>
+          <section data-markdown><textarea data-template>
+          ## Putting it all Together
+          [Average Dragonball Z Power Levels](http://dragonball.wikia.com/wiki/List_of_power_levels#Power_levels)
+
+          > This is a list of known and official power levels in the Dragon Ball
+          universe. All of the levels on this list are taken from the manga,
+          anime, movies, movie pamphlets, Daizenshuu guides, video games and
+          stated mathematical calculations.
+
+          ![DBZ](./img/dbz-lol-srs.gif)
+          </textarea></section data-markdown>
+
+          <section data-markdown><textarea data-template>
+          ### The Steps
+
+          1. `curl` - Download the raw HTML
+          2. `pup` - Extract the rows with the data we want
+          3. `jq` - Extract values from the DOM and calculate statistics
+          4. `in2csv` - Write the results to a final report
+
+          See [`examples/dbz/`](examples/dbz/)
+          </textarea></section data-markdown>
+        </section>
+
+        <section>
+          <section data-markdown><textarea data-template>
+          ## Tools ▶ Composition ▶  Solutions
+
+          Sometimes these are problems you'll want to solve on a regular basis.
+          You can save these commands to files and give them names:
+
+          ```bash
+          #!/bin/bash
+
+          # Save to "extract-address.sh"
+
+          curl -s $1 \
+            | pup 'script[type="application/ld+json"] text{}' \
+            # We get their contents as HTML-escaped text, so we
+            # convert the quotes back
+            | sed 's/&quot;/"/g' \
+            # The '-c' flag tells jq to flatten the result to 1 line
+            | jq -c '({ name, url, telephone } + .address) | del(.["@type"])'
+
+          ```
+
+          </textarea></section>
+
+          <section data-markdown><textarea data-template>
+            ### Automate Dependencies and Task Runners
+
+            Find tools that can run commands, skip things that are already
+            done, and run everything in parallel
+          </textarea></section>
+
+
+          <section data-markdown><textarea data-template>
+          ### Drake
+
+          _Data workflow tool, like a "Make for data"_
+
+          - [Factual/drake](https://github.com/Factual/drake) analyzes
+              dependencies and composes building blocks to orchestrate processing
+          - Dependency analysis to produce a result
+          - Parallizes work and maximizes resource utilization
+          - Commands and programs to produce targets
+          - All the tools we discussed--plus many others--can be composed to
+            define bigger building blocks
+          </textarea></section>
+
+          <section data-markdown><textarea data-template>
+          ### Drake Examples
+
+          Filter and emit simple list of unique users
+
+
+          ```bash
+          ; Generate unique list of users with usage information
+          managed_users.jsonl <- db.jsonl.gz
+            zcat $INPUT | jq -c '{user: .user}' | uniq > $OUTPUT
+            if [ $PIPESTATUS -eq 1 ]; then
+              echo $INPUTS >> $[ERR_FILE]; rm $OUTPUT && exit 1;
+            fi
+          ```
+          </textarea></section>
+
+          <section data-markdown><textarea data-template>
+          ### Drake Examples
+
+          Combine raw inputs and insert into a single table
+
+          ```bash
+          %db-products <- products.csv.gz, product-details.csv.gz
+            csvjoin -c product_id,product_id $INPUT0 $INPUT1 \
+              | csvcut -C product_id \
+              | csvsql --table products --insert --db \
+          postgresql://postgres:$[PG_PASS]@$[PG_HOST]:$[PG_PORT]/products
+          ```
+          </textarea></section>
+
+          <section data-markdown><textarea data-template>
+          ### Drake Examples
+
+          ```bash
+          sites-to-process.jsonl.gz <- %base
+            sql2csv --db '$[DB_CONN]' \
+              src/sql/sites-by-processing-state.sql 2>> $[ERR_FILE] \
+              | csvjson --stream \
+              | gzip \
+              > $OUTPUT
+            if [ $PIPESTATUS -eq 1 ]; then
+              echo $INPUTS >> $[ERR_FILE]; rm $OUTPUT && exit 1;
+            fi
+          ```
+          </textarea></section>
+        </section>
+
+      <section data-markdown><textarea data-template>
+      ## Takeaways
+
+      By now you should have:
+
+      - New ways to be lazy
+      - A healthy distaste for "the hard way"
+      - A passion for simple tools and composition
+      - An awareness of a few tools to help you crunch data
+      - A frustration with me for making you look at Dragonball Z
+      </textarea></section>
+
+      <section data-markdown><textarea data-template>
+      ## Presentation Complete. Questions?
+
+      Go forth and do the datas.
+
+      ![Go forth and do the datas](./img/computer-fixin.gif)
+      </textarea></section>
+
+      </div>
+    </div>
+
+    <script src="node_modules/reveal.js/dist/reveal.js"></script>
+    <script src="node_modules/reveal.js/plugin/markdown/markdown.js"></script>
+
+    <script>
+      let deck = new Reveal({
+        plugins: [ RevealMarkdown ]
+      })
+      deck.initialize({
+        history: true,
+        slideNumber: true,
+        previewLinks: true,
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+        backgroundTransition: 'fade', // none/fade/slide/convex/concave/zoom
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "cli-data-processing",
+  "version": "3.4.1",
+  "description": "A presentation about using CLI tools for data processing",
+  "homepage": "",
+  "subdomain": "revealjs",
+  "main": "js/reveal.js",
+  "scripts": {},
+  "author": {
+    "name": "David Pierce",
+    "email": "david.dean.pierce@gmail.com",
+    "web": "http://thedahv.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/thedahv/cli-data-processing.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "reveal.js": "^4.0.0"
+  }
+}
