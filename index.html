@@ -173,12 +173,74 @@
         </textarea></section>
 
         <section data-markdown><textarea data-template>
-        ## Elegant BASH for a More Civilized Age
+          ![terminal](img/terminal.png)
 
-        <small>Available on most systems via package managers, binaries, or
-        source.</small>
+          - If you're not already sure, find out what terminal program to use on
+            your computer
+            - Macs have Terminal.app already installed
+            - Check out [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
+          - These examples will use `bash` -- a "shell" used to send commands
+            and run CLI programs on your computer
+        </textarea></section>
 
-        - [jq](https://stedolan.github.io/jq/) - Parse, transform, and emit JSON from files or stdin
+        <section>
+          <section data-markdown><textarea data-template>
+          ## Tools in Your Toolbelt
+
+          MacOS and Linux machines come with a standard set of tools inspired by
+          the original UNIX systems:
+
+          - `cat`: print the contents of a file
+          - `grep`: find content in a file based on patterns
+          - `awk`: process text streams with filters, extractors, and reporters
+          - `curl`: send and process HTTP requests
+          - `uniq`: remove duplicates or group and count lines
+          - `sort`: sort files
+          </textarea></section>
+          <section data-markdown><textarea data-template>
+          ## So Much Stuff!
+
+          There are many tools out there and it takes time to learn. Just focus
+          on the few that solve most of your problems now, and keep learning:
+
+          - ["10 command-line tools for data analysis in Linux"](https://opensource.com/article/17/2/command-line-tools-data-analysis-linux)
+          - ["7 Command Line Tools Every New Web Developer Should Know"](https://suncoast.io/blog/command-lines-web-developer/)
+          - ["Master the command line: How to use man pages"](https://www.macworld.com/article/2044790/master-the-command-line-how-to-use-man-pages.html)
+          </textarea></section>
+
+        </section>
+
+        <section>
+          <section data-markdown><textarea data-template>
+          ## Elegant BASH for a More Civilized Age
+
+          The computer shell lets us work with files and programs. But more
+          importantly, it lets us "connect" programs together into long chains.
+
+          The standard output (stdin) of one program can become the standard input
+          (stdin) of another via "pipes".
+          </textarea></section>
+
+          <section data-markdown><textarea data-template>
+          ## Examples
+
+          - [`examples/bash/parse-server-logs.sh`](examples/bash/parse-server-logs.sh)
+          - [`examples/bash/popular-commands.sh`](examples/bash/popular-commands.sh)
+
+          </textarea></section>
+        </section>
+
+        <section data-markdown><textarea data-template>
+        ## "Buy Nothing"
+
+        <small>
+        There is a whole world of tools available to solve all kinds of new
+        problems. And many are free and available on most systems via package
+        managers, binaries, or source.
+        </small>
+
+        - [jq](https://stedolan.github.io/jq/) - Parse, transform, and emit JSON
+          from files or stdin
         - [pup](https://github.com/ericchiang/pup) - Parse and extract from HTML in a file or stdin
         - [csvkit](https://csvkit.readthedocs.io/en/1.0.1/) - A suite of tools for working
           with data read from or written to CSV files
@@ -187,6 +249,7 @@
         and [RecordStream](https://github.com/benbernard/RecordStream)--but
         we'll stay focused on these 3 for now_
         </textarea></section>
+        </section>
 
         <section>
           <section data-markdown><textarea data-template>
