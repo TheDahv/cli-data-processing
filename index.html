@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="node_modules/reveal.js/dist/theme/moon.css">
 
     <!-- Theme used for syntax highlighting of code -->
-    <link rel="stylesheet" href="node_modules/reveal.js/plugin/highlight/zenburn.css">
+    <link rel="stylesheet" href="https://highlightjs.org/static/demo/styles/atom-one-light.css">
   </head>
   <body>
     <div class="reveal">
@@ -27,8 +27,8 @@
 
         Together, we will learn some things:
 
-        - Motivation and inspiration to learn this
         - Why more code isn't the answer
+        - Why you may not need code in the first place
         - UNIX philosophy and why it _is_ the answer
         - Some new tools and how to use them
         - A taste of what is possible
@@ -42,7 +42,7 @@
         - Get a bunch of related data from remote sources!
         - Do a bunch of processing on the contents!
         - Format and save the results in a CSV to send back!
-        </data-template></section>
+        </textarea></section>
 
         <section data-markdown><textarea data-template>
         ### Meanwhile, I'm like...
@@ -63,7 +63,7 @@
         <section data-markdown><textarea data-template>
         ## Some Context...
 
-        - I often work with teams that need data to do their jobs
+        - I work with people who need data to do their jobs
         - Many requests are unique one-offs
         - Without more tooling, I need to write custom programs
         </textarea></section>
@@ -142,12 +142,12 @@
         <section data-markdown><textarea data-template>
           ## But what if you don't know how to program to begin with?
 
-          Everyone should learn to program if they want to. But shouldn't be the
-          reason you learn to program.
+          Everyone should learn to program if they want. But these kinds of
+          problems shouldn't be the reason you learn to program.
 
           The tools already exist on your computer.
 
-          Save programming for a more interesting problem.
+          Save programming for more interesting problems.
         </textarea></section>
 
         <section data-markdown><textarea data-template>
@@ -240,9 +240,10 @@
               {"name": "David"},
               {"name": "Micaline"},
               {"name": "Porter"},
-              {"name": "Isaac"}
+              {"name": "Isaac"},
+              {"name": "Wesley"}
             ]' | jq -c 'map(.name | length)'
-          > [5,8,6,5]
+          > [5,8,6,5,6]
           ```
           </textarea></section>
 
@@ -270,7 +271,7 @@
             A hastily borrowed example: HN article titles
 
             ```bash
-            curl -s http://hckrnews.com/ \
+            curl -s https://hckrnews.com/ \
               | pup '#entries .entries .entry a:last-child json{}'
             ```
 
@@ -330,14 +331,18 @@
         <section data-markdown><textarea data-template>
         ### csvjson
 
-        ![JSON in CSV](./img/json-in-csv.png)
+        Have a program that takes in JSON, but you have a CSV? Have JSON stored
+        in CSVs or DB columns?
+
+        Send them to csv json to turn column headers into JSON fields. Each row
+        becomes an object.
 
         ```bash
-        csvjson --stream -p '\' --maxfield=1000000 \
-          | jq '{id} + (.data | fromjson)'
+          csvjson --stream \
+          | parallel -N1 "echo {} | curl https://myapi.com/data -XPOST -H 'Content-Type: application/json' -d @-"
         ```
 
-        See [examples/csvkit/csvjson/nested-json.sh](examples/csvkit/csvjson/nested-json.sh)
+        See [examples/csvkit/csvjson/convert-to-json.sh](examples/csvkit/csvjson/convert-to-json.sh)
         </textarea></section>
 
         <section data-markdown><textarea data-template>
@@ -403,10 +408,12 @@
           ## Putting it all Together
           [Average Dragonball Z Power Levels](http://dragonball.wikia.com/wiki/List_of_power_levels#Power_levels)
 
-          > This is a list of known and official power levels in the Dragon Ball
+          <small><blockquote>
+          This is a list of known and official power levels in the Dragon Ball
           universe. All of the levels on this list are taken from the manga,
           anime, movies, movie pamphlets, Daizenshuu guides, video games and
           stated mathematical calculations.
+          </blockquote></small>
 
           ![DBZ](./img/dbz-lol-srs.gif)
           </textarea></section data-markdown>
@@ -425,7 +432,7 @@
 
         <section>
           <section data-markdown><textarea data-template>
-          ## Tools ▶ Composition ▶  Solutions
+          ## Tools ▶ Composition ▶ Solutions
 
           Sometimes these are problems you'll want to solve on a regular basis.
           You can save these commands to files and give them names:
@@ -541,10 +548,11 @@
 
     <script src="node_modules/reveal.js/dist/reveal.js"></script>
     <script src="node_modules/reveal.js/plugin/markdown/markdown.js"></script>
+    <script src="node_modules/reveal.js/plugin/highlight/highlight.js"></script>
 
     <script>
       let deck = new Reveal({
-        plugins: [ RevealMarkdown ]
+        plugins: [ RevealMarkdown, RevealHighlight ]
       })
       deck.initialize({
         history: true,
