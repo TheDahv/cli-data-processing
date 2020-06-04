@@ -77,16 +77,16 @@
 
         ```javascript
         try {
-          const file = await fsPromises.readFile('someFile.csv');
+          const file = await fsPromises.readFile('someFile.csv')
           const rows = csv.parse(options, file)
-          const results = rows.map(wickedCoolProcessing);
+          const results = rows.map(wickedCoolProcessing)
           const out = results.join('\n')
-          await fsPromises.writeFile('outFile.csv', out);
+          await fsPromises.writeFile('outFile.csv', out)
         } catch (err) {
-          console.error(`something went wrong: ${err}`);
-          process.exit(1);
+          console.error(`something went wrong: ${err}`)
+          process.exit(1)
         }
-        console.log('Done!');
+        console.log('Done!')
         ```
         </textarea></section>
 
