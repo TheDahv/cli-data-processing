@@ -56,4 +56,5 @@ To use it, make sure Docker is installed and running. Then open a terminal
 application in the same directory to which you've downloaded this repository.
 
 To build the image, type this in your terminal and press Enter to run it: `./build-docker.sh`.
+
 To run a container based on that image, run `./run-docker.sh`.
