@@ -56,6 +56,11 @@ Emit a flat stream of results rather than a single array result:
   .[]
 '
 
+# Important note!!!
+# jq 1.6 seems to have trouble with the "?//" operator
+# jq 1.5 does not, so these examples use that version.
+# It's not a common operator, so you may not have to care, but just be aware
+# what you install on your computer
 cat extracted-table-rows.json \
   | jq -c '
     map(select(.children[1] | (.children)?))
