@@ -17,7 +17,7 @@
     <div class="reveal">
       <div class="slides">
         <section data-markdown><textarea data-template>
-          ## Command-line wizardry for CSV, JSON, & HTML
+          ## CLI Tools for CSV, JSON, & HTML
 
           _How to be lazy & avoid writing programs to process data_
         </textarea></section>
@@ -469,14 +469,15 @@
         <section>
           <section data-markdown><textarea data-template>
           ## Putting it all Together
+
           [Average Dragonball Z Power Levels](http://dragonball.wikia.com/wiki/List_of_power_levels#Power_levels)
 
-          <small><blockquote>
+          <small><em>
           This is a list of known and official power levels in the Dragon Ball
           universe. All of the levels on this list are taken from the manga,
           anime, movies, movie pamphlets, Daizenshuu guides, video games and
           stated mathematical calculations.
-          </blockquote></small>
+            </em></small>
 
           ![DBZ](./img/dbz-lol-srs.gif)
           </textarea></section data-markdown>
@@ -533,7 +534,7 @@
           - [Factual/drake](https://github.com/Factual/drake) analyzes
               dependencies and composes building blocks to orchestrate processing
           - Dependency analysis to produce a result
-          - Parallizes work and maximizes resource utilization
+          - Parallelizes work and maximizes resource utilization
           - Commands and programs to produce targets
           - All the tools we discussed--plus many others--can be composed to
             define bigger building blocks
@@ -585,6 +586,15 @@
           ```
           </textarea></section>
         </section>
+
+      <section data-markdown><textarea data-template>
+      ## Limitations and Downsides
+
+      - Shell scripting can messy quickly
+      - Long-lived problems means you can't turn your laptop off
+      - If the problem is sufficiently complex, you'll eventually want the
+        flexibility of a custom program
+      </textarea></section>
 
       <section data-markdown><textarea data-template>
       ## Takeaways
