@@ -9,6 +9,9 @@ gives you some ideas for when _not_ to use code to solve a problem. If you are
 not a programmer and frustrated by a lack of tools to solve data problems, this
 shows you how to get a job done using tools probably already on your computer.
 
+If you prefer, you can watch the contents of this video series as a
+[YouTube playlist](https://www.youtube.com/watch?v=Q5udR1sAlnI&list=PLpY9qiZFd0oEjaDhuaZypl2Z60GXGF7ab)
+
 ## Viewing the Presentation
 
 The contents of the presentation are in the `index.html` file in this
